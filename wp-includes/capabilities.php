@@ -1204,15 +1204,21 @@ function map_meta_cap( $cap, $user_id ) {
  * @return bool
  */
 function current_user_can( $capability ) {
+	static $cache = array();
 	$current_user = wp_get_current_user();
 
 	if ( empty( $current_user ) )
 		return false;
 
+	$key = args_to_key( array( $current_user, func_get_args() ) );
+	if ( isset( $cache[ $key ] ) )
+		return $cache[ $key ];
+
 	$args = array_slice( func_get_args(), 1 );
 	$args = array_merge( array( $capability ), $args );
 
-	return call_user_func_array( array( $current_user, 'has_cap' ), $args );
+	$cache[ $key ] = call_user_func_array( array( $current_user, 'has_cap' ), $args );
+	return $cache[ $key ];
 }
 
 /**

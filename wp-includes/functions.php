@@ -3605,3 +3605,20 @@ function _device_can_upload() {
 	return true;
 }
 
+/**
+ * Turn a scalar, array, or object into a md5sum
+ * @param mixed $args
+ * @return string
+ */
+function args_to_key($args) {
+    $tmp = array();
+    $it = new RecursiveIteratorIterator( new RecursiveArrayIterator( $args ) );
+    foreach( $it as $v ) {
+        if ( is_object( $v ) ) {
+            $tmp[] = spl_object_hash( $v );
+        } elseif ( is_scalar( $v ) ) {
+            $tmp[] = $v;
+        }
+    }
+    return md5( implode( '', $tmp ) );
+}

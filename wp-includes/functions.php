@@ -574,7 +574,7 @@ function is_new_day() {
  * This is a convenient function for easily building url queries. It sets the
  * separator to '&' and uses _http_build_query() function.
  *
- * @see _http_build_query() Used to build the query
+ * @see http_build_query() Used to build the query
  * @link http://us2.php.net/manual/en/function.http-build-query.php more on what
  *		http_build_query() does.
  *
@@ -584,37 +584,23 @@ function is_new_day() {
  * @return string URL encoded string
  */
 function build_query( $data ) {
-	return _http_build_query( $data, null, '&', '', false );
+	return http_build_query( $data, null, '&', '', false );
 }
 
-// from php.net (modified by Mark Jaquith to behave like the native PHP5 function)
+/**
+ * Wraps http_build_query
+ * Deprecated since PHP 5 is now a requirement
+ * @deprecated since version 3.5
+ * @param string $data
+ * @param string $prefix
+ * @param string $sep
+ * @param string $key
+ * @param bool $urlencode
+ * @return string
+ */
 function _http_build_query($data, $prefix=null, $sep=null, $key='', $urlencode=true) {
-	$ret = array();
-
-	foreach ( (array) $data as $k => $v ) {
-		if ( $urlencode)
-			$k = urlencode($k);
-		if ( is_int($k) && $prefix != null )
-			$k = $prefix.$k;
-		if ( !empty($key) )
-			$k = $key . '%5B' . $k . '%5D';
-		if ( $v === null )
-			continue;
-		elseif ( $v === FALSE )
-			$v = '0';
-
-		if ( is_array($v) || is_object($v) )
-			array_push($ret,_http_build_query($v, '', $sep, $k, $urlencode));
-		elseif ( $urlencode )
-			array_push($ret, $k.'='.urlencode($v));
-		else
-			array_push($ret, $k.'='.$v);
-	}
-
-	if ( null === $sep )
-		$sep = ini_get('arg_separator.output');
-
-	return implode($sep, $ret);
+	_deprecated_function( __FUNCTION__, '3.5', 'http_build_query()' );
+	return http_build_query( $data, $prefix, $sep, $key, $urlencode );
 }
 
 /**

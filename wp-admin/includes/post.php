@@ -925,12 +925,14 @@ function get_available_post_mime_types($type = 'attachment') {
 }
 
 /**
- * {@internal Missing Short Description}}
- *
+ * Executes a query for attachments. An array of WP_Query arguments
+ * can be passed in, which will override the arguments set by this function.
+ * 
  * @since 2.5.0
+ * @uses apply_filters() Calls 'upload_per_page' on posts_per_page argument
  *
- * @param unknown_type $q
- * @return unknown
+ * @param array|bool $q Array of query variables to use to build the query or false to use $_GET superglobal.
+ * @return array
  */
 function wp_edit_attachments_query( $q = false ) {
 	if ( false === $q )
@@ -1093,7 +1095,7 @@ function get_sample_permalink_html( $id, $new_title = null, $new_slug = null ) {
 		if ( '' == get_option( 'permalink_structure' ) && current_user_can( 'manage_options' ) && !( 'page' == get_option('show_on_front') && $id == get_option('page_on_front') ) )
 			$return .= '<span id="change-permalinks"><a href="options-permalink.php" class="button" target="_blank">' . __('Change Permalinks') . "</a></span>\n";
 		if ( isset($view_post) )
-			$return .= "<span id='view-post-btn'><a href='$permalink' class='button' target='_blank'>$view_post</a></span>\n";
+			$return .= "<span id='view-post-btn'><a href='$permalink' class='button'>$view_post</a></span>\n";
 
 		$return = apply_filters('get_sample_permalink_html', $return, $id, $new_title, $new_slug);
 
@@ -1123,7 +1125,7 @@ function get_sample_permalink_html( $id, $new_title = null, $new_slug = null ) {
 	$return .= '<span id="edit-slug-buttons"><a href="#post_name" class="edit-slug button hide-if-no-js" onclick="editPermalink(' . $id . '); return false;">' . __('Edit') . "</a></span>\n";
 	$return .= '<span id="editable-post-name-full">' . $post_name . "</span>\n";
 	if ( isset($view_post) )
-		$return .= "<span id='view-post-btn'><a href='$view_link' class='button' target='_blank'>$view_post</a></span>\n";
+		$return .= "<span id='view-post-btn'><a href='$view_link' class='button'>$view_post</a></span>\n";
 
 	$return = apply_filters('get_sample_permalink_html', $return, $id, $new_title, $new_slug);
 
@@ -1164,7 +1166,7 @@ function _wp_post_thumbnail_html( $thumbnail_id = null, $post_id = null ) {
 		$content_width = $old_content_width;
 	}
 
-	return apply_filters( 'admin_post_thumbnail_html', $content );
+	return apply_filters( 'admin_post_thumbnail_html', $content, $post_id );
 }
 
 /**

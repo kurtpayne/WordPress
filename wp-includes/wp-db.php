@@ -850,7 +850,8 @@ class wpdb {
 	 * @return void
 	 */
 	function escape_by_ref( &$string ) {
-		$string = $this->_real_escape( $string );
+		if ( ! is_float( $string ) )
+			$string = $this->_real_escape( $string );
 	}
 
 	/**
@@ -901,6 +902,7 @@ class wpdb {
 			$args = $args[0];
 		$query = str_replace( "'%s'", '%s', $query ); // in case someone mistakenly already singlequoted it
 		$query = str_replace( '"%s"', '%s', $query ); // doublequote unquoting
+		$query = str_replace( '%f' , '%F', $query ); // Force floats to be locale unaware		
 		$query = preg_replace( '|(?<!%)%s|', "'%s'", $query ); // quote the strings, avoiding escaped strings like %%s
 		array_walk( $args, array( &$this, 'escape_by_ref' ) );
 		return @vsprintf( $query, $args );
@@ -1104,12 +1106,12 @@ class wpdb {
 			return false;
 		}
 
-		if ( preg_match( '/^\s*(create|alter|truncate|drop) /i', $query ) ) {
+		if ( preg_match( '/^\s*(create|alter|truncate|drop)\s/i', $query ) ) {
 			$return_val = $this->result;
-		} elseif ( preg_match( '/^\s*(insert|delete|update|replace) /i', $query ) ) {
+		} elseif ( preg_match( '/^\s*(insert|delete|update|replace)\s/i', $query ) ) {
 			$this->rows_affected = mysql_affected_rows( $this->dbh );
 			// Take note of the insert_id
-			if ( preg_match( '/^\s*(insert|replace) /i', $query ) ) {
+			if ( preg_match( '/^\s*(insert|replace)\s/i', $query ) ) {
 				$this->insert_id = mysql_insert_id($this->dbh);
 			}
 			// Return number of rows affected

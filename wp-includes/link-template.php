@@ -122,8 +122,10 @@ function get_permalink($id = 0, $leavename = false) {
 			$cats = get_the_category($post->ID);
 			if ( $cats ) {
 				usort($cats, '_usort_terms_by_ID'); // order by ID
-				$category = $cats[0]->slug;
-				if ( $parent = $cats[0]->parent )
+				$category_object = apply_filters( 'post_link_category', $cats[0], $cats, $post );
+				$category_object = get_term( $category_object, 'category' );
+				$category = $category_object->slug;
+				if ( $parent = $category_object->parent )
 					$category = get_category_parents($parent, false, '/', true) . $category;
 			}
 			// show default category in permalinks, without
@@ -1385,7 +1387,7 @@ function get_pagenum_link($pagenum = 1, $escape = true ) {
 
 	$home_root = parse_url(home_url());
 	$home_root = ( isset($home_root['path']) ) ? $home_root['path'] : '';
-	$home_root = preg_quote( trailingslashit( $home_root ), '|' );
+	$home_root = preg_quote( $home_root, '|' );
 
 	$request = preg_replace('|^'. $home_root . '|', '', $request);
 	$request = preg_replace('|^/+|', '', $request);

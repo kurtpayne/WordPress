@@ -1757,6 +1757,7 @@ function wp_check_filetype_and_ext( $file, $filename, $mimes = null ) {
  *
  * @since 2.8.6
  *
+ * @uses apply_filters() Calls 'upload_mimes' on returned array
  * @return array Array of mime types keyed by the file extension regex corresponding to those types.
  */
 function get_allowed_mime_types() {
@@ -2401,7 +2402,7 @@ function wp_list_filter( $list, $args = array(), $operator = 'AND' ) {
 
 		$matched = 0;
 		foreach ( $args as $m_key => $m_value ) {
-			if ( $m_value == $to_match[ $m_key ] )
+			if ( array_key_exists( $m_key, $to_match ) && $m_value == $to_match[ $m_key ] )
 				$matched++;
 		}
 
@@ -3508,7 +3509,7 @@ function wp_allowed_protocols() {
 	static $protocols;
 
 	if ( empty( $protocols ) ) {
-		$protocols = array( 'http', 'https', 'ftp', 'ftps', 'mailto', 'news', 'irc', 'gopher', 'nntp', 'feed', 'telnet', 'mms', 'rtsp', 'svn' );
+		$protocols = array( 'http', 'https', 'ftp', 'ftps', 'mailto', 'news', 'irc', 'gopher', 'nntp', 'feed', 'telnet', 'mms', 'rtsp', 'svn', 'tel', 'fax' );
 		$protocols = apply_filters( 'kses_allowed_protocols', $protocols );
 	}
 

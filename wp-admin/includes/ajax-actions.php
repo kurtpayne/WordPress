@@ -193,7 +193,7 @@ function wp_ajax_autocomplete_user() {
 }
 
 function wp_ajax_dashboard_widgets() {
-	require ABSPATH . 'wp-admin/includes/dashboard.php';
+	require_once ABSPATH . 'wp-admin/includes/dashboard.php';
 
 	switch ( $_GET['widget'] ) {
 		case 'dashboard_incoming_links' :
@@ -1368,7 +1368,18 @@ function wp_ajax_inline_save() {
 	$wp_list_table = _get_list_table('WP_Posts_List_Table');
 
 	$mode = $_POST['post_view'];
-	$wp_list_table->display_rows( array( get_post( $_POST['post_ID'] ) ) );
+
+	$level = 0;
+	$request_post = array( get_post( $_POST['post_ID'] ) );
+	$parent = $request_post[0]->post_parent;
+
+	while ( $parent > 0 ) {
+		$parent_post = get_post( $parent );
+		$parent = $parent_post->post_parent;
+		$level++;
+	}
+
+	$wp_list_table->display_rows( array( get_post( $_POST['post_ID'] ) ), $level );
 
 	wp_die();
 }
@@ -1404,14 +1415,19 @@ function wp_ajax_inline_save_tax() {
 				wp_die( $tag->get_error_message() );
 			wp_die( __( 'Item not updated.' ) );
 		}
-
-		echo $wp_list_table->single_row( $tag );
 	} else {
 		if ( is_wp_error($updated) && $updated->get_error_message() )
 			wp_die( $updated->get_error_message() );
 		wp_die( __( 'Item not updated.' ) );
 	}
-
+	$level = 0;
+	$parent = $tag->parent;
+	while ( $parent > 0 ) {
+		$parent_tag = get_term( $parent, $taxonomy );
+		$parent = $parent_tag->parent;
+		$level++; 
+	}
+	echo $wp_list_table->single_row( $tag, $level );
 	wp_die();
 }
 

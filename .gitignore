@@ -1,1 +1,8 @@
-./wp-config.php
+.idea/
+wp-config.php
+wp-content/debug.log
+wp-content/plugins/debug-bar-cron/
+wp-content/plugins/debug-bar-extender/
+wp-content/plugins/debug-bar-query-tracer/
+wp-content/plugins/debug-bar/
+wp-content/uploads/

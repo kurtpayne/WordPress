@@ -599,7 +599,7 @@ function media_sideload_image($file, $post_id, $desc = null) {
 
 		// Set variables for storage
 		// fix file filename for query strings
-		preg_match('/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG)/', $file, $matches);
+		preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $file, $matches );
 		$file_array['name'] = basename($matches[0]);
 		$file_array['tmp_name'] = $tmp;
 
@@ -969,7 +969,7 @@ function get_attachment_fields_to_edit($post, $errors = null) {
 
 	foreach ( get_attachment_taxonomies($post) as $taxonomy ) {
 		$t = (array) get_taxonomy($taxonomy);
-		if ( ! $t['public'] )
+		if ( ! $t['public'] || ! $t['show_ui'] )
 			continue;
 		if ( empty($t['label']) )
 			$t['label'] = $taxonomy;
@@ -1326,9 +1326,8 @@ function media_upload_form( $errors = null ) {
 
 ?></div>
 <?php
-// Check quota for this blog if multisite
 if ( is_multisite() && !is_upload_space_available() ) {
-	echo '<p>' . sprintf( __( 'Sorry, you have filled your storage quota (%s MB).' ), get_space_allowed() ) . '</p>';
+	do_action( 'upload_ui_over_quota' );
 	return;
 }
 
@@ -2064,6 +2063,10 @@ function media_upload_flash_bypass() {
 	<?php
 }
 add_action('post-plupload-upload-ui', 'media_upload_flash_bypass');
+
+function multisite_over_quota_message() {
+	echo '<p>' . sprintf( __( 'Sorry, you have used all of your storage quota of %s MB.' ), get_space_allowed() ) . '</p>';
+}
 
 /**
  * {@internal Missing Short Description}}

@@ -138,17 +138,9 @@ function get_user_by( $field, $value ) {
 	if ( !$userdata )
 		return false;
 
-	$user = wp_cache_get( $userdata->ID, 'users' );
-
-	if ( !empty( $user ) && !empty( $user->caps ) )
-		return $user;
-
 	$user = new WP_User;
 	$user->init( $userdata );
 
-
-
-	wp_cache_set( $userdata->ID, $user, 'users' );
 	return $user;
 }
 endif;
